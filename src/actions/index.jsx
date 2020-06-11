@@ -1,5 +1,9 @@
-import {URL_LIST,URL_SEARCH, URL_DETAIL, URL_PERSON, URL_CAST, URL_VIDEO, API_KEY, API_KEY_ALT} from '../const';
+import {URL_LIST,URL_SEARCH, URL_DETAIL, URL_PERSON, URL_CAST, URL_VIDEO, API_KEY, API_KEY_ALT, URL_SIMILAR} from '../const';
 // action types
+export const FETCH_SIMILAR = 'FETCH_SIMILAR';
+export const FETCH_SIMILAR_SUCCESS = 'FETCH_SIMILAR_SUCCESS';
+export const FETCH_SIMILAR_FAILURE = 'FETCH_SIMILAR_FAILURE';
+
 export const SEARCH_MOVIE = 'SEARCH_MOVIE';
 export const SEARCH_MOVIE_SUCCESS = 'SEARCH_MOVIE_SUCCESS';
 export const SEARCH_MOVIE_FAILURE = 'SEARCH_MOVIE_FAILURE';
@@ -40,6 +44,7 @@ function searchMovieFail(error) {
     error
   };
 }
+
 
 function fetchMovies() {
   return {
@@ -134,6 +139,26 @@ function fetchTrailersFail(error) {
     error
   };
 }
+function fetchSimilarMovies() {
+  return {
+    type: FETCH_SIMILAR
+  };
+}
+
+function fetchSimilarSuccess(data) {
+  return {
+    type: FETCH_SIMILAR_SUCCESS,
+    data
+  };
+}
+
+function fetchSimilarFail(error) {
+  return {
+    type: FETCH_SIMILAR_FAILURE,
+    error
+  };
+}
+
 
 export function searchMovieList(keyword){
   let url = URL_SEARCH + keyword + API_KEY_ALT;
@@ -160,6 +185,19 @@ export function fetchMovieList(option){
       .catch(error => dispatch(fetchMoviesFail(error)))
   }
 }
+export function fetchSimilarMoviesListX(id) {
+  const url_movie = URL_DETAIL + id + URL_SIMILAR + API_KEY;
+  console.log("FETCH_SIMILAR MOVIE URL")
+  console.log(url_movie)
+
+  return function (dispatch) {
+    dispatch(fetchSimilarMovies())
+    return fetch(url_movie)
+      .then(response => response.json())
+      .then(data => dispatch(fetchSimilarSuccess(data)))
+      .catch(error => dispatch(fetchSimilarFail(error)))
+  }
+}
 
 export function fetchMovieDetail(id){
   const url_movie = URL_DETAIL + id + API_KEY;
@@ -171,6 +209,7 @@ export function fetchMovieDetail(id){
       .catch(error => dispatch(fetchMovieFail(error)))
   }
 }
+
 
 export function fetchStarDetail(id){
   const url_star = URL_PERSON + id + API_KEY;
